@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動物占い＋四柱推命 鑑定ツール</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9f9f7;color:#1a1a1a;padding:2rem 1rem}
+.wrap{max-width:600px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin-bottom:1.5rem;text-align:center}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+label{font-size:13px;color:#666;display:block;margin-bottom:6px}
+input[type=number]{width:100%;height:36px;padding:0 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px}
+.gender-row{display:flex;gap:10px;margin-bottom:20px}
+.gender-btn{flex:1;height:36px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all .15s}
+.gender-btn.active{background:#e8f0fe;color:#1a73e8;border-color:#1a73e8}
+button#calc{width:100%;height:40px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:15px;cursor:pointer;margin-bottom:1.5rem;transition:background .15s}
+button#calc:hover{background:#f0f0f0}
+.result{display:none}
+.animal-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.animal-card h2{font-size:22px;font-weight:500;margin-bottom:4px}
+.tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:6px;margin-right:6px;margin-bottom:8px}
+.tag-animal{background:#e6f4ea;color:#1e7e34}
+.tag-group{background:#e8f0fe;color:#1a73e8}
+.desc{font-size:14px;color:#555;line-height:1.7;margin-bottom:10px}
+.traits{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.trait{font-size:12px;padding:3px 10px;border-radius:20px;background:#f5f5f5;color:#555;border:1px solid #e0e0e0}
+.meisei-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.meisei-card h3{font-size:15px;font-weight:500;margin-bottom:12px}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pillar{background:#f9f9f7;border-radius:8px;padding:10px;text-align:center}
+.pillar-name{font-size:11px;color:#999;margin-bottom:6px}
+.pillar-kan{font-size:18px;font-weight:500}
+.pillar-shi{font-size:14px;color:#555;margin-top:2px}
+.pillar-read{font-size:11px;color:#999;margin-top:3px}
+.honshitsu{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem}
+.honshitsu h3{font-size:15px;font-weight:500;margin-bottom:10px}
+.honshitsu-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.honshitsu-label{font-size:12px;color:#888;min-width:60px;padding-top:2px}
+.honshitsu-val{font-size:14px;line-height:1.6}
+.error{color:#c0392b;font-size:14px;padding:8px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>動物占い＋四柱推命 鑑定</h1>
+<div class="row">
+  <div><label>年</label><input type="number" id="yr" min="1960" max="2022" placeholder="1989"></div>
+  <div><label>月</label><input type="number" id="mo" min="1" max="12" placeholder="9"></div>
+  <div><label>日</label><input type="number" id="dy" min="1" max="31" placeholder="22"></div>
+</div>
+<label style="margin-bottom:6px">性別</label>
+<div class="gender-row">
+  <button class="gender-btn active" id="g-m" onclick="setGender('男性')">男性</button>
+  <button class="gender-btn" id="g-f" onclick="setGender('女性')">女性</button>
+</div>
+<button id="calc" onclick="calc()">鑑定する</button>
+<div id="err" class="error"></div>
+<div class="result" id="result">
+  <div class="animal-card">
+    <h2 id="r-chara"></h2>
+    <div><span class="tag tag-animal" id="r-animal"></span><span class="tag tag-group" id="r-group"></span></div>
+    <div class="desc" id="r-desc"></div>
+    <div class="traits" id="r-traits"></div>
+  </div>
+  <div class="meisei-card">
+    <h3>四柱推命 命式</h3>
+    <div class="pillars">
+      <div class="pillar"><div class="pillar-name">年柱</div><div class="pillar-kan" id="p-y-kan"></div><div class="pillar-shi" id="p-y-shi"></div><div class="pillar-read" id="p-y-read"></div></div>
+      <div class="pillar"><div class="pillar-name">月柱</div><div class="pillar-kan" id="p-m-kan"></div><div class="pillar-shi" id="p-m-shi"></div><div class="pillar-read" id="p-m-read"></div></div>
+      <div class="pillar"><div class="pillar-name">日柱</div><div class="pillar-kan" id="p-d-kan"></div><div class="pillar-shi" id="p-d-shi"></div><div class="pillar-read" id="p-d-read"></div></div>
+    </div>
+  </div>
+  <div class="honshitsu">
+    <h3>簡易読み解き</h3>
+    <div class="honshitsu-item"><div class="honshitsu-label">日干の本質</div><div class="honshitsu-val" id="h-nichi"></div></div>
+    <div class="honshitsu-item"><div class="honshitsu-label">総合メモ</div><div class="honshitsu-val" id="h-sogo"></div></div>
+  </div>
+</div>
+</div>
+
+<script>
+let gender='男性';
+function setGender(g){gender=g;document.getElementById('g-m').classList.toggle('active',g==='男性');document.getElementById('g-f').classList.toggle('active',g==='女性');}
+
+const TABLE={
+  1960:[24,55,24,55,25,56,26,57,28,58,29,59],
+  1961:[30,1,29,0,30,1,31,2,33,3,34,4],
+  1962:[35,6,34,5,35,6,36,7,38,8,39,9],
+  1963:[40,11,39,10,40,11,41,12,43,13,44,14],
+  1964:[45,16,45,16,46,17,47,18,49,19,0,20],
+  1965:[51,22,50,21,51,22,52,23,54,24,55,25],
+  1966:[56,27,55,26,56,27,57,28,59,29,0,30],
+  1967:[1,32,0,31,1,32,2,33,4,34,11,35],
+  1968:[6,37,6,37,7,38,8,39,10,40,16,41],
+  1969:[12,43,11,42,12,43,13,44,15,45,21,46],
+  1970:[17,48,16,47,17,48,18,49,20,50,21,51],
+  1971:[22,53,21,52,22,53,23,54,25,55,26,56],
+  1972:[27,58,27,58,28,59,29,0,31,1,32,2],
+  1973:[33,4,32,3,33,4,34,5,36,6,37,7],
+  1974:[38,9,37,8,38,9,39,10,41,11,42,12],
+  1975:[43,14,42,13,43,14,44,15,46,16,47,17],
+  1976:[48,19,48,19,49,20,50,21,52,22,53,23],
+  1977:[54,25,53,24,54,25,55,26,57,27,58,28],
+  1978:[59,30,58,29,59,30,0,31,2,32,3,33],
+  1979:[4,35,3,34,4,35,5,36,7,37,8,38],
+  1980:[9,40,9,40,10,41,11,42,13,43,14,44],
+  1981:[15,46,14,45,15,46,16,47,18,48,19,49],
+  1982:[20,51,19,50,20,51,21,52,23,53,24,54],
+  1983:[25,56,24,55,25,56,26,57,28,58,29,59],
+  1984:[30,1,30,1,31,2,32,3,34,4,35,5],
+  1985:[36,7,35,6,36,7,37,8,39,9,40,10],
+  1986:[41,12,40,11,41,12,42,13,44,14,45,15],
+  1987:[46,17,45,16,46,17,47,18,49,19,50,20],
+  1988:[51,22,51,22,52,23,53,24,55,25,56,26],
+  1989:[57,28,56,27,57,28,58,29,0,30,1,31],
+  1990:[2,33,1,32,2,33,3,34,5,35,6,36],
+  1991:[7,38,6,37,7,38,8,39,10,40,11,41],
+  1992:[12,43,12,43,13,44,14,45,16,46,17,47],
+  1993:[18,49,17,48,18,49,19,50,21,51,22,52],
+  1994:[23,54,22,53,23,54,24,55,26,56,27,57],
+  1995:[28,59,27,58,28,59,29,0,31,1,32,2],
+  1996:[33,4,33,4,34,5,35,6,37,7,38,8],
+  1997:[39,10,38,9,39,10,40,11,42,12,43,13],
+  1998:[44,15,43,14,44,15,45,16,47,17,48,18],
+  1999:[49,20,48,19,49,20,50,21,52,22,53,23],
+  2000:[54,25,54,25,55,26,56,27,58,28,59,29],
+  2001:[0,31,59,30,0,31,1,32,3,33,4,34],
+  2002:[5,36,4,35,5,36,6,37,8,38,9,39],
+  2003:[10,41,9,40,10,41,11,42,13,43,14,44],
+  2004:[15,46,15,46,16,47,17,48,19,49,20,50],
+  2005:[21,52,20,51,21,52,22,53,24,54,25,55],
+  2006:[26,57,25,56,26,57,27,58,29,59,0,30],
+  2007:[31,2,30,1,31,2,32,3,34,4,35,5],
+  2008:[36,7,36,7,37,8,38,9,40,10,41,11],
+  2009:[42,13,41,12,42,13,43,14,45,15,46,16],
+  2010:[47,18,46,17,47,18,48,19,50,20,51,21],
+  2011:[52,23,51,22,52,23,53,24,55,25,56,26],
+  2012:[57,28,57,28,58,29,59,30,1,31,2,32],
+  2013:[3,34,2,33,3,34,4,35,6,36,7,37],
+  2014:[8,39,7,38,8,39,9,40,11,41,12,42],
+  2015:[13,44,12,43,13,44,14,45,16,46,17,47],
+  2016:[18,49,18,49,19,50,20,51,22,52,23,53],
+  2017:[24,55,23,54,24,55,25,56,27,57,28,58],
+  2018:[29,0,28,59,29,0,30,1,32,2,33,3],
+  2019:[34,5,33,4,34,5,35,6,37,7,38,8],
+  2020:[39,10,39,10,40,11,41,12,43,13,44,14],
+  2021:[45,16,44,15,45,16,46,17,48,18,49,19],
+  2022:[50,21,49,20,50,21,51,22,53,23,54,24],
+};
+
+const CHARA={
+  0:'落ち着きのあるペガサス',
+  1:'長距離ランナーのチータ',2:'社交家のたぬき',3:'落ち着きのない猿',4:'フットワークの軽いコアラ',
+  5:'面倒見のいい黒ひょう',6:'愛情あふれる虎',7:'全力疾走するチータ',8:'磨き上げられたたぬき',
+  9:'大きな志をもった猿',10:'母性豊かなコアラ',11:'正直なこじか',12:'人気者のゾウ',
+  13:'ネアカの狼',14:'協調性のないひつじ',15:'どっしりとした猿',16:'コアラのなかのコアラ',
+  17:'強い意志をもったこじか',18:'デリケートなゾウ',19:'放浪の狼',20:'物静かなひつじ',
+  21:'落ち着きのあるペガサス',22:'強靭な翼をもつペガサス',23:'無邪気なひつじ',24:'クリエイティブな狼',
+  25:'穏やかな狼',26:'粘り強いひつじ',27:'波乱に満ちたペガサス',28:'優雅なペガサス',
+  29:'チャレンジ精神旺盛なひつじ',30:'順応性のある狼',31:'リーダーとなるゾウ',32:'しっかり者のこじか',
+  33:'活動的なコアラ',34:'気分屋の猿',35:'頼られると嬉しいひつじ',36:'好感のもたれる狼',
+  37:'まっしぐらに突き進むゾウ',38:'華やかなこじか',39:'夢とロマンのコアラ',40:'尽す猿',
+  41:'大器晩成のたぬき',42:'足腰の強いチータ',43:'動きまわる虎',44:'情熱的な黒ひょう',
+  45:'サービス精神旺盛なコアラ',46:'守りの猿',47:'人間味あふれるたぬき',48:'品格のあるチータ',
+  49:'ゆったりとした悠然の虎',50:'落ち込みの激しい黒ひょう',51:'我が道を行くライオン',52:'統率力のあるライオン',
+  53:'感情豊かな黒ひょう',54:'楽天的な虎',55:'パワフルな虎',56:'気どらない黒ひょう',
+  57:'感情的なライオン',58:'傷つきやすいライオン',59:'束縛を嫌う黒ひょう',60:'慈悲深い虎'
+};
+
+const ANIMAL_INFO={
+  'チータ':{group:'太陽グループ',desc:'行動力と推進力が際立つ。スピード感を持って物事を進め、目標に向かってひたすら走り続けるタイプ。',traits:['行動力','スピード感','直感的','負けず嫌い']},
+  'たぬき':{group:'月グループ',desc:'社交性が高く、人を引き込む魅力がある。表向きは穏やかだが内側は戦略的で、物事をうまくまとめる力を持つ。',traits:['社交的','策略家','親しみやすい','記憶力']},
+  '猿':{group:'地球グループ',desc:'好奇心旺盛で学習能力が高い。柔軟に環境に適応し、多彩な才能を発揮するが、飽きやすい面も。',traits:['好奇心旺盛','適応力','多才','飽きっぽい']},
+  'コアラ':{group:'月グループ',desc:'ゆったりとした独自のペースで生きるタイプ。こだわりと感性が強く、自分の世界観を大切にする。',traits:['マイペース','こだわり','感性豊か','独自の世界']},
+  '黒ひょう':{group:'太陽グループ',desc:'プライドと美意識が高く、常にスマートで洗練されていたい。リーダー気質でありながら感情の波が激しい面も。',traits:['プライド高い','スマート','リーダー気質','感情の起伏']},
+  '虎':{group:'地球グループ',desc:'情熱と愛情に溢れ、周囲を力強く引っ張るタイプ。義理堅く人情に厚いが、わが道を行く頑固な一面もある。',traits:['情熱的','義理堅い','行動力','頑固']},
+  'こじか':{group:'月グループ',desc:'純粋さと誠実さが魅力。繊細な感性を持ち、人の気持ちに寄り添うことが得意。傷つきやすい面も。',traits:['純粋','誠実','繊細','共感力']},
+  'ゾウ':{group:'地球グループ',desc:'包容力と記憶力が高く、信頼される存在。コツコツと積み上げる粘り強さがあり、長期的な成功に向いている。',traits:['包容力','記憶力','粘り強い','信頼感']},
+  '狼':{group:'太陽グループ',desc:'独自の哲学と感性を持ち、自由を愛するロマンチスト。一匹狼的な一面を持つが、仲間への義理は厚い。',traits:['独自の哲学','自由人','ロマンチスト','義理堅い']},
+  'ひつじ':{group:'地球グループ',desc:'協調性が高く、周囲と調和しながら進む。平和主義で穏やかだが、内側に強いこだわりと粘り強さを持つ。',traits:['協調性','平和主義','粘り強い','温和']},
+  'ペガサス':{group:'太陽グループ',desc:'自由な発想と独自の世界観を持つ夢追い人。直感力が鋭く、創造的なアイデアを生み出す。束縛が苦手。',traits:['自由な発想','直感的','創造力','束縛が苦手']},
+  'ライオン':{group:'月グループ',desc:'誇り高く堂々としたリーダー。強い自我と意志を持ち、自分の信念を曲げない。感情が豊かで傷つきやすい面も。',traits:['誇り高い','リーダー','強い意志','感情豊か']}
+};
+
+const KAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const SHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const KAN_READ=['きのえ','きのと','ひのえ','ひのと','つちのえ','つちのと','かのえ','かのと','みずのえ','みずのと'];
+const SHI_READ=['ね','うし','とら','う','たつ','み','うま','ひつじ','さる','とり','いぬ','い'];
+const KAN_NATURE={
+  '甲':'大木のエネルギー。まっすぐな上昇志向と正直さが本質。リーダーとして道を切り拓く力がある。',
+  '乙':'しなやかな草木。柔軟性と適応力が高く、人間関係を大切にする。表向きは穏やかだが芯は強い。',
+  '丙':'輝く太陽。明るく積極的で、周囲を照らす存在感がある。情熱的で行動力があるが、飽きやすい面も。',
+  '丁':'灯火のエネルギー。繊細で温かく、人の心に寄り添う力がある。内側に強い信念を秘めている。',
+  '戊':'大地の山。どっしりとした安定感と包容力。変化をゆっくり受け入れ、揺るぎない存在として周囲を支える。',
+  '己':'耕された土。柔軟に周囲に合わせながら、実りをもたらす。思慮深く、人の気持ちに敏感。',
+  '庚':'鋭い刃金。研ぎ澄まされた意志と感性。クールに見えるが芯は熱く、こだわりが強い。',
+  '辛':'磨かれた宝石。繊細で美意識が高い。完成度へのこだわりと、傷つきやすい一面を持つ。',
+  '壬':'大河の流れ。広大な視野と包容力。柔軟に流れながらも、力強く進む知性派。',
+  '癸':'霧雨・地下水。繊細で深い感受性。直感力が高く、表に出にくいが内側に豊かな世界を持つ。'
+};
+
+function getJulianDay(y,m,d){if(m<=2){y--;m+=12;}const A=Math.floor(y/100);const B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524;}
+function getKanShi(y,m,d){const jd=getJulianDay(y,m,d);const base=getJulianDay(1984,1,1);const diff=jd-base;const kanIdx=((diff%10)+10)%10;const shiIdx=((diff%12)+12)%12;return{kan:KAN[kanIdx],shi:SHI[shiIdx],kanRead:KAN_READ[kanIdx],shiRead:SHI_READ[shiIdx]};}
+
+function getAnimalNo(y,m,d){
+  const row=TABLE[y];
+  if(!row)return null;
+  const code=row[m-1];
+  let no=code+d;
+  if(no>60)no-=60;
+  if(no===0)no=60;
+  return no;
+}
+
+function getAnimalFromChara(chara){
+  for(const a of Object.keys(ANIMAL_INFO)){if(chara.includes(a))return a;}
+  return null;
+}
+
+function calc(){
+  document.getElementById('err').textContent='';
+  document.getElementById('result').style.display='none';
+  const y=parseInt(document.getElementById('yr').value);
+  const m=parseInt(document.getElementById('mo').value);
+  const d=parseInt(document.getElementById('dy').value);
+  if(!y||!m||!d||isNaN(y)||isNaN(m)||isNaN(d)){document.getElementById('err').textContent='生年月日を正しく入力してください。';return;}
+  if(!TABLE[y]){document.getElementById('err').textContent='対応範囲は1960〜2022年です。';return;}
+  if(m<1||m>12||d<1||d>31){document.getElementById('err').textContent='月・日の値が範囲外です。';return;}
+
+  const no=getAnimalNo(y,m,d);
+  if(!no){document.getElementById('err').textContent='計算できませんでした。';return;}
+  const chara=CHARA[no]||'不明';
+  const animal=getAnimalFromChara(chara);
+  const info=animal?ANIMAL_INFO[animal]:{group:'不明',desc:'',traits:[]};
+
+  document.getElementById('r-chara').textContent=chara;
+  document.getElementById('r-animal').textContent=animal||'';
+  document.getElementById('r-group').textContent=info.group;
+  document.getElementById('r-desc').textContent=info.desc;
+  const tr=document.getElementById('r-traits');
+  tr.innerHTML='';
+  info.traits.forEach(t=>{const s=document.createElement('span');s.className='trait';s.textContent=t;tr.appendChild(s);});
+
+  const nen=getKanShi(y,1,1);
+  const nichi=getKanShi(y,m,d);
+  const mKanShi=getKanShi(y,m,1);
+
+  document.getElementById('p-y-kan').textContent=nen.kan;
+  document.getElementById('p-y-shi').textContent=nen.shi;
+  document.getElementById('p-y-read').textContent=nen.kanRead+'・'+nen.shiRead;
+  document.getElementById('p-m-kan').textContent=mKanShi.kan;
+  document.getElementById('p-m-shi').textContent=mKanShi.shi;
+  document.getElementById('p-m-read').textContent=mKanShi.kanRead+'・'+mKanShi.shiRead;
+  document.getElementById('p-d-kan').textContent=nichi.kan;
+  document.getElementById('p-d-shi').textContent=nichi.shi;
+  document.getElementById('p-d-read').textContent=nichi.kanRead+'・'+nichi.shiRead;
+
+  document.getElementById('h-nichi').textContent=KAN_NATURE[nichi.kan]||'';
+  document.getElementById('h-sogo').textContent='日干「'+nichi.kan+'（'+nichi.kanRead+'）」が本質。動物占いの「'+chara+'」とあわせると、'+info.desc;
+
+  document.getElementById('result').style.display='block';
+}
+</script>
+</body>
+</html>
