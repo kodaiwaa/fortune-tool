@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI自己分析ツール｜動き方タイプ×四柱推命</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PD162PJ9PV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PD162PJ9PV');
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9f9f7;color:#1a1a1a;padding:2rem 1rem}
@@ -226,7 +234,7 @@ function showResult(){
   const tr=document.getElementById('r-traits');
   tr.innerHTML='';
   info.traits.forEach(t=>{const s=document.createElement('span');s.className='trait';s.textContent=t;tr.appendChild(s);});
-  document.getElementById('cta-link').href=info.noteUrl;
+  document.getElementById('cta-link').onclick=function(e){e.preventDefault();trackNoteClick(typeName,info.noteUrl);};
 
   const y=parseInt(document.getElementById('yr').value);
   const m=parseInt(document.getElementById('mo').value);
@@ -239,9 +247,19 @@ function showResult(){
 
   document.getElementById('prog').style.width='100%';
   document.getElementById('result').style.display='block';
+
+  // GA: 診断完了イベント
+  gtag('event', 'diagnosis_complete', {type: typeName});
+}
+
+function trackNoteClick(typeName, url){
+  // GA: note CTAクリックイベント
+  gtag('event', 'note_cta_click', {type: typeName});
+  window.open(url, '_blank');
 }
 
 renderQ();
 </script>
+<p style="text-align:center;font-size:11px;color:#ccc;margin-top:2rem;padding-bottom:1rem">利用状況の改善のため、匿名のアクセス解析を行っています。</p>
 </body>
 </html>
