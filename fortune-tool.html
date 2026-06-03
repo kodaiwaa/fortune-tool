@@ -3,192 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI自己分析ツール｜動物モチーフ×四柱推命</title>
+<title>AI自己分析ツール｜動き方タイプ×四柱推命</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9f9f7;color:#1a1a1a;padding:2rem 1rem}
 .wrap{max-width:600px;margin:0 auto}
-h1{font-size:20px;font-weight:500;margin-bottom:1.5rem;text-align:center}
-.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
-label{font-size:13px;color:#666;display:block;margin-bottom:6px}
-input[type=number]{width:100%;height:36px;padding:0 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px}
-.gender-row{display:flex;gap:10px;margin-bottom:20px}
-.gender-btn{flex:1;height:36px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#666;cursor:pointer;font-size:14px;transition:all .15s}
-.gender-btn.active{background:#e8f0fe;color:#1a73e8;border-color:#1a73e8}
-button#calc{width:100%;height:40px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:15px;cursor:pointer;margin-bottom:1.5rem;transition:background .15s}
-button#calc:hover{background:#f0f0f0}
+h1{font-size:20px;font-weight:500;margin-bottom:.5rem;text-align:center}
+.subtitle{font-size:13px;color:#888;text-align:center;margin-bottom:.5rem}
+.disclaimer{font-size:11px;color:#bbb;text-align:center;margin-bottom:1.5rem;line-height:1.6}
+.progress{height:4px;background:#eee;border-radius:2px;margin-bottom:1.5rem}
+.progress-bar{height:4px;background:#1a73e8;border-radius:2px;transition:width .3s}
+.q-label{font-size:11px;color:#999;margin-bottom:.5rem}
+.q-text{font-size:16px;font-weight:500;margin-bottom:1.2rem;line-height:1.6}
+.choices{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem}
+.choice{padding:14px 16px;border:1px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;font-size:14px;line-height:1.5;transition:all .15s;text-align:left}
+.choice:hover{border-color:#1a73e8;background:#f0f4ff}
+.choice.selected{border-color:#1a73e8;background:#e8f0fe;color:#1a73e8}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.btn{height:40px;padding:0 20px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:14px;cursor:pointer;transition:background .15s}
+.btn:hover{background:#f0f0f0}
+.btn-primary{background:#1a73e8;color:#fff;border-color:#1a73e8}
+.btn-primary:hover{background:#1557b0}
 .result{display:none}
-.animal-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
-.animal-card h2{font-size:22px;font-weight:500;margin-bottom:4px}
-.tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:6px;margin-right:6px;margin-bottom:8px}
-.tag-animal{background:#e6f4ea;color:#1e7e34}
-.tag-group{background:#e8f0fe;color:#1a73e8}
-.desc{font-size:14px;color:#555;line-height:1.7;margin-bottom:10px}
-.traits{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.trait{font-size:12px;padding:3px 10px;border-radius:20px;background:#f5f5f5;color:#555;border:1px solid #e0e0e0}
+.type-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.5rem;margin-bottom:12px}
+.type-name{font-size:24px;font-weight:600;margin-bottom:.5rem}
+.type-tag{display:inline-block;font-size:12px;padding:3px 12px;border-radius:6px;background:#e8f0fe;color:#1a73e8;margin-bottom:1rem}
+.type-desc{font-size:14px;color:#444;line-height:1.8;margin-bottom:1rem}
+.traits{display:flex;flex-wrap:wrap;gap:6px}
+.trait{font-size:12px;padding:3px 12px;border-radius:20px;background:#f5f5f5;color:#555;border:1px solid #e0e0e0}
 .meisei-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
-.meisei-card h3{font-size:15px;font-weight:500;margin-bottom:12px}
-.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.pillar{background:#f9f9f7;border-radius:8px;padding:10px;text-align:center}
-.pillar-name{font-size:11px;color:#999;margin-bottom:6px}
-.pillar-kan{font-size:18px;font-weight:500}
-.pillar-shi{font-size:14px;color:#555;margin-top:2px}
-.pillar-read{font-size:11px;color:#999;margin-top:3px}
-.honshitsu{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem}
-.honshitsu h3{font-size:15px;font-weight:500;margin-bottom:10px}
-.honshitsu-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
-.honshitsu-label{font-size:12px;color:#888;min-width:60px;padding-top:2px}
-.honshitsu-val{font-size:14px;line-height:1.6}
-.error{color:#c0392b;font-size:14px;padding:8px 0}
+.meisei-card h3{font-size:14px;font-weight:500;color:#888;margin-bottom:.75rem}
+.nichi-val{font-size:14px;line-height:1.7}
+.cta{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;text-align:center}
+.cta p{font-size:13px;color:#666;margin-bottom:.75rem;line-height:1.6}
+.cta a{display:inline-block;padding:10px 24px;background:#1a1a1a;color:#fff;border-radius:8px;font-size:13px;text-decoration:none}
+.birthday-section{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.birthday-section h3{font-size:14px;font-weight:500;color:#888;margin-bottom:.75rem}
+.birthday-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+label{font-size:12px;color:#888;display:block;margin-bottom:4px}
+input[type=number]{width:100%;height:36px;padding:0 10px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff}
+.skip-link{font-size:12px;color:#aaa;text-decoration:underline;cursor:pointer;display:block;text-align:center;margin-top:.5rem}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>動物モチーフ×四柱推命 自己分析</h1>
-<p style="font-size:11px;color:#999;text-align:center;margin-bottom:1.2rem">※本ツールは公式の「動物占い」「動物キャラナビ」「個性心理學」とは無関係の独自自己分析ツールです</p>
-<div class="row">
-  <div><label>年</label><input type="number" id="yr" min="1960" max="2022" placeholder="1989"></div>
-  <div><label>月</label><input type="number" id="mo" min="1" max="12" placeholder="9"></div>
-  <div><label>日</label><input type="number" id="dy" min="1" max="31" placeholder="22"></div>
-</div>
-<label style="margin-bottom:6px">性別</label>
-<div class="gender-row">
-  <button class="gender-btn active" id="g-m" onclick="setGender('男性')">男性</button>
-  <button class="gender-btn" id="g-f" onclick="setGender('女性')">女性</button>
-</div>
-<button id="calc" onclick="calc()">鑑定する</button>
-<div id="err" class="error"></div>
-<div class="result" id="result">
-  <div class="animal-card">
-    <h2 id="r-chara"></h2>
-    <div><span class="tag tag-animal" id="r-animal"></span><span class="tag tag-group" id="r-group"></span></div>
-    <div class="desc" id="r-desc"></div>
-    <div class="traits" id="r-traits"></div>
-  </div>
-  <div class="meisei-card">
-    <h3>四柱推命 命式</h3>
-    <div class="pillars">
-      <div class="pillar"><div class="pillar-name">年柱</div><div class="pillar-kan" id="p-y-kan"></div><div class="pillar-shi" id="p-y-shi"></div><div class="pillar-read" id="p-y-read"></div></div>
-      <div class="pillar"><div class="pillar-name">月柱</div><div class="pillar-kan" id="p-m-kan"></div><div class="pillar-shi" id="p-m-shi"></div><div class="pillar-read" id="p-m-read"></div></div>
-      <div class="pillar"><div class="pillar-name">日柱</div><div class="pillar-kan" id="p-d-kan"></div><div class="pillar-shi" id="p-d-shi"></div><div class="pillar-read" id="p-d-read"></div></div>
+  <h1>動き方タイプ診断</h1>
+  <p class="subtitle">AI自己分析ツール｜タイプ×四柱推命</p>
+  <p class="disclaimer">※本ツールは独自の自己分析ツールです。公式の「動物占い」「動物キャラナビ」「個性心理學」とは無関係で、それらの分類・換算表・ロジックは使用していません。</p>
+
+  <div id="quiz-section">
+    <div class="progress"><div class="progress-bar" id="prog" style="width:0%"></div></div>
+    <div class="q-label" id="q-label">Q1 / 8</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="choices" id="choices"></div>
+    <div class="nav">
+      <button class="btn" id="btn-back" onclick="goBack()" style="display:none">← 戻る</button>
+      <span></span>
+      <button class="btn btn-primary" id="btn-next" onclick="goNext()" disabled>次へ →</button>
     </div>
   </div>
-  <div class="honshitsu">
-    <h3>簡易読み解き</h3>
-    <div class="honshitsu-item"><div class="honshitsu-label">日干の本質</div><div class="honshitsu-val" id="h-nichi"></div></div>
-    <div class="honshitsu-item"><div class="honshitsu-label">総合メモ</div><div class="honshitsu-val" id="h-sogo"></div></div>
+
+  <div id="birthday-section-wrap" style="display:none">
+    <div class="birthday-section">
+      <h3>（任意）生年月日を入力すると四柱推命メモが表示されます</h3>
+      <div class="birthday-row">
+        <div><label>年</label><input type="number" id="yr" min="1940" max="2010" placeholder="1989"></div>
+        <div><label>月</label><input type="number" id="mo" min="1" max="12" placeholder="9"></div>
+        <div><label>日</label><input type="number" id="dy" min="1" max="31" placeholder="22"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="showResult()">結果を見る</button>
+      <span class="skip-link" onclick="showResult()">生年月日は入力しない</span>
+    </div>
   </div>
-</div>
+
+  <div class="result" id="result">
+    <div class="type-card">
+      <div class="type-name" id="r-name"></div>
+      <div class="type-tag" id="r-tag"></div>
+      <div class="type-desc" id="r-desc"></div>
+      <div class="traits" id="r-traits"></div>
+    </div>
+    <div class="meisei-card" id="meisei-card" style="display:none">
+      <h3>四柱推命メモ（日干）</h3>
+      <div class="nichi-val" id="h-nichi"></div>
+    </div>
+    <div class="cta">
+      <p>あなたのタイプをさらに深掘り。<br>仕事・お金・人間関係への活かし方をnoteで解説しています。</p>
+      <a href="#" id="cta-link">詳細ガイドをnoteで読む →</a>
+    </div>
+  </div>
 </div>
 
 <script>
-let gender='男性';
-function setGender(g){gender=g;document.getElementById('g-m').classList.toggle('active',g==='男性');document.getElementById('g-f').classList.toggle('active',g==='女性');}
+const QUESTIONS=[
+  {text:'新しいことに出会ったとき、まず何をしますか？',choices:[
+    {text:'とりあえずやってみる',type:'突破行動型'},
+    {text:'自分の感覚で「合う・合わない」を確かめる',type:'自由直感型'},
+    {text:'情報を集めて、理解してから動く',type:'探求内省型'},
+    {text:'周りの人の反応を見てから決める',type:'調和共感型'}
+  ]},
+  {text:'仕事や作業で一番得意なのは？',choices:[
+    {text:'コツコツ続けること',type:'堅実積み上げ型'},
+    {text:'アイデアを出すこと',type:'自由直感型'},
+    {text:'人の間に入って進めること',type:'調和共感型'},
+    {text:'クオリティを上げること',type:'美意識表現型'}
+  ]},
+  {text:'ミスをしたとき、まず何を考えますか？',choices:[
+    {text:'次どう動くか',type:'突破行動型'},
+    {text:'なぜ起きたか原因を掘り下げる',type:'探求内省型'},
+    {text:'周りへの影響が気になる',type:'調和共感型'},
+    {text:'同じミスをしない仕組みを作る',type:'堅実積み上げ型'}
+  ]},
+  {text:'理想の働き方に近いのは？',choices:[
+    {text:'自分のペースで自由に動く',type:'自由直感型'},
+    {text:'チームで助け合いながら進める',type:'調和共感型'},
+    {text:'計画どおり着実に積み上げる',type:'堅実積み上げ型'},
+    {text:'こだわった仕事を世に出す',type:'美意識表現型'}
+  ]},
+  {text:'褒められて一番嬉しいのは？',choices:[
+    {text:'「センスがいい」',type:'美意識表現型'},
+    {text:'「行動が早い」',type:'突破行動型'},
+    {text:'「信頼できる」',type:'堅実積み上げ型'},
+    {text:'「面白い発想だ」',type:'自由直感型'}
+  ]},
+  {text:'人間関係で大事にしていることは？',choices:[
+    {text:'深く理解し合える関係',type:'探求内省型'},
+    {text:'気持ちよく助け合える関係',type:'調和共感型'},
+    {text:'お互い干渉しすぎない関係',type:'自由直感型'},
+    {text:'一緒に何かを成し遂げる関係',type:'突破行動型'}
+  ]},
+  {text:'時間があるとき、自然にやることは？',choices:[
+    {text:'気になることを深く調べる',type:'探求内省型'},
+    {text:'新しい場所や体験に出かける',type:'突破行動型'},
+    {text:'好きなものをとことん磨く',type:'美意識表現型'},
+    {text:'誰かと話したり、つながる',type:'調和共感型'}
+  ]},
+  {text:'自分の一番の強みだと思うのは？',choices:[
+    {text:'継続力・安定感',type:'堅実積み上げ型'},
+    {text:'直感・発想力',type:'自由直感型'},
+    {text:'分析・思考力',type:'探求内省型'},
+    {text:'表現力・こだわり',type:'美意識表現型'}
+  ]}
+];
 
-const TABLE={
-  1960:[24,55,24,55,25,56,26,57,28,58,29,59],
-  1961:[30,1,29,0,30,1,31,2,33,3,34,4],
-  1962:[35,6,34,5,35,6,36,7,38,8,39,9],
-  1963:[40,11,39,10,40,11,41,12,43,13,44,14],
-  1964:[45,16,45,16,46,17,47,18,49,19,0,20],
-  1965:[51,22,50,21,51,22,52,23,54,24,55,25],
-  1966:[56,27,55,26,56,27,57,28,59,29,0,30],
-  1967:[1,32,0,31,1,32,2,33,4,34,11,35],
-  1968:[6,37,6,37,7,38,8,39,10,40,16,41],
-  1969:[12,43,11,42,12,43,13,44,15,45,21,46],
-  1970:[17,48,16,47,17,48,18,49,20,50,21,51],
-  1971:[22,53,21,52,22,53,23,54,25,55,26,56],
-  1972:[27,58,27,58,28,59,29,0,31,1,32,2],
-  1973:[33,4,32,3,33,4,34,5,36,6,37,7],
-  1974:[38,9,37,8,38,9,39,10,41,11,42,12],
-  1975:[43,14,42,13,43,14,44,15,46,16,47,17],
-  1976:[48,19,48,19,49,20,50,21,52,22,53,23],
-  1977:[54,25,53,24,54,25,55,26,57,27,58,28],
-  1978:[59,30,58,29,59,30,0,31,2,32,3,33],
-  1979:[4,35,3,34,4,35,5,36,7,37,8,38],
-  1980:[9,40,9,40,10,41,11,42,13,43,14,44],
-  1981:[15,46,14,45,15,46,16,47,18,48,19,49],
-  1982:[20,51,19,50,20,51,21,52,23,53,24,54],
-  1983:[25,56,24,55,25,56,26,57,28,58,29,59],
-  1984:[30,1,30,1,31,2,32,3,34,4,35,5],
-  1985:[36,7,35,6,36,7,37,8,39,9,40,10],
-  1986:[41,12,40,11,41,12,42,13,44,14,45,15],
-  1987:[46,17,45,16,46,17,47,18,49,19,50,20],
-  1988:[51,22,51,22,52,23,53,24,55,25,56,26],
-  1989:[57,28,56,27,57,28,58,29,0,30,1,31],
-  1990:[2,33,1,32,2,33,3,34,5,35,6,36],
-  1991:[7,38,6,37,7,38,8,39,10,40,11,41],
-  1992:[12,43,12,43,13,44,14,45,16,46,17,47],
-  1993:[18,49,17,48,18,49,19,50,21,51,22,52],
-  1994:[23,54,22,53,23,54,24,55,26,56,27,57],
-  1995:[28,59,27,58,28,59,29,0,31,1,32,2],
-  1996:[33,4,33,4,34,5,35,6,37,7,38,8],
-  1997:[39,10,38,9,39,10,40,11,42,12,43,13],
-  1998:[44,15,43,14,44,15,45,16,47,17,48,18],
-  1999:[49,20,48,19,49,20,50,21,52,22,53,23],
-  2000:[54,25,54,25,55,26,56,27,58,28,59,29],
-  2001:[0,31,59,30,0,31,1,32,3,33,4,34],
-  2002:[5,36,4,35,5,36,6,37,8,38,9,39],
-  2003:[10,41,9,40,10,41,11,42,13,43,14,44],
-  2004:[15,46,15,46,16,47,17,48,19,49,20,50],
-  2005:[21,52,20,51,21,52,22,53,24,54,25,55],
-  2006:[26,57,25,56,26,57,27,58,29,59,0,30],
-  2007:[31,2,30,1,31,2,32,3,34,4,35,5],
-  2008:[36,7,36,7,37,8,38,9,40,10,41,11],
-  2009:[42,13,41,12,42,13,43,14,45,15,46,16],
-  2010:[47,18,46,17,47,18,48,19,50,20,51,21],
-  2011:[52,23,51,22,52,23,53,24,55,25,56,26],
-  2012:[57,28,57,28,58,29,59,30,1,31,2,32],
-  2013:[3,34,2,33,3,34,4,35,6,36,7,37],
-  2014:[8,39,7,38,8,39,9,40,11,41,12,42],
-  2015:[13,44,12,43,13,44,14,45,16,46,17,47],
-  2016:[18,49,18,49,19,50,20,51,22,52,23,53],
-  2017:[24,55,23,54,24,55,25,56,27,57,28,58],
-  2018:[29,0,28,59,29,0,30,1,32,2,33,3],
-  2019:[34,5,33,4,34,5,35,6,37,7,38,8],
-  2020:[39,10,39,10,40,11,41,12,43,13,44,14],
-  2021:[45,16,44,15,45,16,46,17,48,18,49,19],
-  2022:[50,21,49,20,50,21,51,22,53,23,54,24],
-};
-
-const CHARA={
-  0:'内省的なペガサス',
-  1:'ひたむきなチーター',2:'和を結ぶたぬき',3:'好奇心あふれる猿',4:'マイペースなコアラ',
-  5:'面倒見の良い黒ひょう',6:'情熱的な虎',7:'一直線なチーター',8:'器用なたぬき',
-  9:'志の高い猿',10:'包容力のあるコアラ',11:'誠実なこじか',12:'存在感のあるゾウ',
-  13:'明るい狼',14:'独自路線のひつじ',15:'地に足のついた猿',16:'穏やかなコアラ',
-  17:'芯の強いこじか',18:'繊細なゾウ',19:'自由な狼',20:'静かな存在感のひつじ',
-  21:'自由に翔けるペガサス',22:'力強いペガサス',23:'素直なひつじ',24:'独創的な狼',
-  25:'温和な狼',26:'粘り強いひつじ',27:'波乱万丈のペガサス',28:'気品あるペガサス',
-  29:'挑戦するひつじ',30:'柔軟な狼',31:'頼れるゾウ',32:'真面目なこじか',
-  33:'活発なコアラ',34:'気まぐれな猿',35:'人のために動くひつじ',36:'親しみやすい狼',
-  37:'突進するゾウ',38:'輝くこじか',39:'夢想家のコアラ',40:'献身的な猿',
-  41:'着実なたぬき',42:'機敏なチーター',43:'動き回る虎',44:'熱血な黒ひょう',
-  45:'奉仕精神のあるコアラ',46:'堅実な猿',47:'人情派のたぬき',48:'品のあるチーター',
-  49:'悠然とした虎',50:'感受性豊かな黒ひょう',51:'孤高のライオン',52:'統率するライオン',
-  53:'情緒豊かな黒ひょう',54:'楽観的な虎',55:'力強い虎',56:'自然体の黒ひょう',
-  57:'感情的なライオン',58:'傷つきやすいライオン',59:'自由を愛する黒ひょう',60:'慈愛の虎'
-};
-
-const ANIMAL_INFO={
-  'チーター':{group:'太陽タイプ',desc:'スピードと突破力が武器。目標を定めたら一直線に走り抜ける行動派。直感で動き、エネルギッシュに場を引っ張る。',traits:['行動力','スピード感','直感的','負けず嫌い']},
-  'たぬき':{group:'月タイプ',desc:'観察力と柔軟な対応力が強み。周囲の空気を読みながら巧みに立ち回る。親しみやすさの裏に冷静な判断力を持つ。',traits:['社交的','観察力','親しみやすい','記憶力']},
-  '猿':{group:'地球タイプ',desc:'知的好奇心が旺盛で習得が早い。多彩な才能を持ち環境への適応力が高い。刺激がないと飽きを感じやすい面もある。',traits:['好奇心旺盛','適応力','多才','飽きっぽい']},
-  'コアラ':{group:'月タイプ',desc:'独自のペースと世界観を大切にするタイプ。深いこだわりと豊かな感性で、自分らしい道を着実に歩む。',traits:['マイペース','こだわり','感性豊か','独自の世界']},
-  '黒ひょう':{group:'太陽タイプ',desc:'高い美意識とプライドを持つ。洗練を好みスマートに振る舞うが、内面は情熱的で感情の起伏も大きい。',traits:['美意識','スマート','リーダー気質','感情の起伏']},
-  '虎':{group:'地球タイプ',desc:'情熱と義理人情に溢れる熱血タイプ。周囲を力強く鼓舞しながら自分の信念を貫く。頑固な一面も持つ。',traits:['情熱的','義理堅い','行動力','頑固']},
-  'こじか':{group:'月タイプ',desc:'純粋で誠実な感性が魅力。繊細に人の気持ちを感じ取り、寄り添うことが得意。傷つきやすいが回復力もある。',traits:['純粋','誠実','繊細','共感力']},
-  'ゾウ':{group:'地球タイプ',desc:'記憶力と包容力に優れ、周囲から信頼される存在。コツコツと積み上げる粘り強さで長期的な成果を出す。',traits:['包容力','記憶力','粘り強い','信頼感']},
-  '狼':{group:'太陽タイプ',desc:'独自の哲学と感性を持ち自由を愛するタイプ。一見孤独に見えるが仲間への絆は深く、独创的な発想を持つ。',traits:['独自の哲学','自由人','ロマンチスト','義理堅い']},
-  'ひつじ':{group:'地球タイプ',desc:'協調性が高く周囲との調和を大切にする。穏やかで平和主義だが、内側にはゆるぎないこだわりと粘り強さを持つ。',traits:['協調性','平和主義','粘り強い','温和']},
-  'ペガサス':{group:'太陽タイプ',desc:'自由な発想と鋭い直感を持つ創造タイプ。独自の世界観でアイデアを生み出し続ける。型にはまることが苦手。',traits:['自由な発想','直感的','創造力','束縛が苦手']},
-  'ライオン':{group:'月タイプ',desc:'誇りと強い意志を持つ統率者タイプ。自分の信念を曲げず堂々と振る舞う。感情が豊かで傷つきやすい一面も持つ。',traits:['誇り高い','リーダー','強い意志','感情豊か']}
+const TYPE_INFO={
+  '自由直感型':{tag:'自由直感型',desc:'ひらめきと余白を大切にする創造派。型にはまらず、自分の感覚を信じて動く。直感が鋭く、独自の発想で新しい道を切り開く。一方で、ルーティンや細かい管理が続くと息切れしやすい。',traits:['直感力','発想力','独自性','自由への欲求'],noteUrl:'#'},
+  '堅実積み上げ型':{tag:'堅実積み上げ型',desc:'コツコツと積み上げる力が武器。計画を立て、着実に前進する安定感がある。信頼を築くのが得意で、長期的な成果を出しやすい。変化や曖昧さが続くと消耗しやすい面もある。',traits:['継続力','計画性','安定感','信頼'],noteUrl:'#'},
+  '突破行動型':{tag:'突破行動型',desc:'スピードと実行力で場を動かす行動派。考えるより先に動き、エネルギーで壁を突き破る。チャレンジが好きで、停滞より失敗を選ぶタイプ。じっくり考える場面では焦りを感じやすい。',traits:['行動力','スピード','挑戦心','突破力'],noteUrl:'#'},
+  '調和共感型':{tag:'調和共感型',desc:'人の気持ちを読む力と場をつなぐ力が強み。チームの潤滑油として自然に動き、人間関係を大切にする。頼まれると断れず、自分のペースを犠牲にしやすい面もある。',traits:['共感力','協調性','場づくり','気配り'],noteUrl:'#'},
+  '探求内省型':{tag:'探求内省型',desc:'深く考え、本質を掘り下げることが得意。情報を集めて整理し、意味や構造を見つけるのが好き。静かな環境でじっくり取り組む場面で力を発揮する。表面的なやり取りは疲弊しやすい。',traits:['分析力','深掘り','思考力','内省'],noteUrl:'#'},
+  '美意識表現型':{tag:'美意識表現型',desc:'感性とこだわりで世界に独自の価値を生み出すタイプ。クオリティへの執着が強く、「これでいい」に妥協できない。表現・発信・制作の場で際立った力を発揮する。完璧主義が足枷になることも。',traits:['感性','こだわり','表現力','美意識'],noteUrl:'#'}
 };
 
 const KAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-const SHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const KAN_READ=['きのえ','きのと','ひのえ','ひのと','つちのえ','つちのと','かのえ','かのと','みずのえ','みずのと'];
-const SHI_READ=['ね','うし','とら','う','たつ','み','うま','ひつじ','さる','とり','いぬ','い'];
 const KAN_NATURE={
   '甲':'大木のエネルギー。まっすぐな上昇志向と正直さが本質。リーダーとして道を切り拓く力がある。',
   '乙':'しなやかな草木。柔軟性と適応力が高く、人間関係を大切にする。表向きは穏やかだが芯は強い。',
@@ -202,67 +170,77 @@ const KAN_NATURE={
   '癸':'霧雨・地下水。繊細で深い感受性。直感力が高く、表に出にくいが内側に豊かな世界を持つ。'
 };
 
+let current=0;
+const answers=[];
+
+function renderQ(){
+  const q=QUESTIONS[current];
+  document.getElementById('q-label').textContent='Q'+(current+1)+' / '+QUESTIONS.length;
+  document.getElementById('q-text').textContent=q.text;
+  document.getElementById('prog').style.width=((current/QUESTIONS.length)*100)+'%';
+  const c=document.getElementById('choices');
+  c.innerHTML='';
+  q.choices.forEach((ch,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice'+(answers[current]===i?' selected':'');
+    btn.textContent=ch.text;
+    btn.onclick=()=>selectChoice(i);
+    c.appendChild(btn);
+  });
+  document.getElementById('btn-back').style.display=current>0?'':'none';
+  document.getElementById('btn-next').disabled=answers[current]===undefined;
+  document.getElementById('btn-next').textContent=current===QUESTIONS.length-1?'結果へ →':'次へ →';
+}
+
+function selectChoice(i){
+  answers[current]=i;
+  document.querySelectorAll('.choice').forEach((b,j)=>b.classList.toggle('selected',j===i));
+  document.getElementById('btn-next').disabled=false;
+}
+
+function goNext(){
+  if(answers[current]===undefined)return;
+  if(current<QUESTIONS.length-1){current++;renderQ();}
+  else{document.getElementById('quiz-section').style.display='none';document.getElementById('birthday-section-wrap').style.display='';}
+}
+
+function goBack(){if(current>0){current--;renderQ();}}
+
+function calcType(){
+  const score={};
+  answers.forEach((a,qi)=>{const t=QUESTIONS[qi].choices[a].type;score[t]=(score[t]||0)+1;});
+  return Object.entries(score).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
 function getJulianDay(y,m,d){if(m<=2){y--;m+=12;}const A=Math.floor(y/100);const B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524;}
-function getKanShi(y,m,d){const jd=getJulianDay(y,m,d);const base=getJulianDay(1984,1,1);const diff=jd-base;const kanIdx=((diff%10)+10)%10;const shiIdx=((diff%12)+12)%12;return{kan:KAN[kanIdx],shi:SHI[shiIdx],kanRead:KAN_READ[kanIdx],shiRead:SHI_READ[shiIdx]};}
+function getNichiKan(y,m,d){const jd=getJulianDay(y,m,d);const base=getJulianDay(1984,1,1);const diff=jd-base;const idx=((diff%10)+10)%10;return{kan:KAN[idx],read:KAN_READ[idx]};}
 
-function getAnimalNo(y,m,d){
-  const row=TABLE[y];
-  if(!row)return null;
-  const code=row[m-1];
-  let no=code+d;
-  if(no>60)no-=60;
-  if(no===0)no=60;
-  return no;
-}
-
-function getAnimalFromChara(chara){
-  for(const a of Object.keys(ANIMAL_INFO)){if(chara.includes(a))return a;}
-  return null;
-}
-
-function calc(){
-  document.getElementById('err').textContent='';
-  document.getElementById('result').style.display='none';
-  const y=parseInt(document.getElementById('yr').value);
-  const m=parseInt(document.getElementById('mo').value);
-  const d=parseInt(document.getElementById('dy').value);
-  if(!y||!m||!d||isNaN(y)||isNaN(m)||isNaN(d)){document.getElementById('err').textContent='生年月日を正しく入力してください。';return;}
-  if(!TABLE[y]){document.getElementById('err').textContent='対応範囲は1960〜2022年です。';return;}
-  if(m<1||m>12||d<1||d>31){document.getElementById('err').textContent='月・日の値が範囲外です。';return;}
-
-  const no=getAnimalNo(y,m,d);
-  if(!no){document.getElementById('err').textContent='計算できませんでした。';return;}
-  const chara=CHARA[no]||'不明';
-  const animal=getAnimalFromChara(chara);
-  const info=animal?ANIMAL_INFO[animal]:{group:'不明',desc:'',traits:[]};
-
-  document.getElementById('r-chara').textContent=chara;
-  document.getElementById('r-animal').textContent=animal||'';
-  document.getElementById('r-group').textContent=info.group;
+function showResult(){
+  document.getElementById('birthday-section-wrap').style.display='none';
+  const typeName=calcType();
+  const info=TYPE_INFO[typeName];
+  document.getElementById('r-name').textContent=typeName;
+  document.getElementById('r-tag').textContent=info.tag;
   document.getElementById('r-desc').textContent=info.desc;
   const tr=document.getElementById('r-traits');
   tr.innerHTML='';
   info.traits.forEach(t=>{const s=document.createElement('span');s.className='trait';s.textContent=t;tr.appendChild(s);});
+  document.getElementById('cta-link').href=info.noteUrl;
 
-  const nen=getKanShi(y,1,1);
-  const nichi=getKanShi(y,m,d);
-  const mKanShi=getKanShi(y,m,1);
+  const y=parseInt(document.getElementById('yr').value);
+  const m=parseInt(document.getElementById('mo').value);
+  const d=parseInt(document.getElementById('dy').value);
+  if(y&&m&&d&&!isNaN(y)&&!isNaN(m)&&!isNaN(d)&&y>=1940&&y<=2010){
+    const nichi=getNichiKan(y,m,d);
+    document.getElementById('h-nichi').textContent='日干「'+nichi.kan+'（'+nichi.read+'）」— '+KAN_NATURE[nichi.kan];
+    document.getElementById('meisei-card').style.display='';
+  }
 
-  document.getElementById('p-y-kan').textContent=nen.kan;
-  document.getElementById('p-y-shi').textContent=nen.shi;
-  document.getElementById('p-y-read').textContent=nen.kanRead+'・'+nen.shiRead;
-  document.getElementById('p-m-kan').textContent=mKanShi.kan;
-  document.getElementById('p-m-shi').textContent=mKanShi.shi;
-  document.getElementById('p-m-read').textContent=mKanShi.kanRead+'・'+mKanShi.shiRead;
-  document.getElementById('p-d-kan').textContent=nichi.kan;
-  document.getElementById('p-d-shi').textContent=nichi.shi;
-  document.getElementById('p-d-read').textContent=nichi.kanRead+'・'+nichi.shiRead;
-
-  document.getElementById('h-nichi').textContent=KAN_NATURE[nichi.kan]||'';
-  document.getElementById('h-sogo').textContent='日干「'+nichi.kan+'（'+nichi.kanRead+'）」が本質。動物モチーフ「'+chara+'」とあわせると、'+info.desc;
-
-  document.getElementById('result').style.display='block';
+  document.getElementById('prog').style.width='100%';
+  document.getElementById('result').style.display='';
 }
+
+renderQ();
 </script>
 </body>
 </html>
