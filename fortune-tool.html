@@ -89,7 +89,7 @@ input[type=number]{width:100%;height:36px;padding:0 10px;border:1px solid #ddd;b
     </div>
     <div class="cta">
       <p>あなたのタイプをさらに深掘り。<br>仕事・お金・人間関係への活かし方をnoteで解説しています。</p>
-      <a href="#" id="cta-link">詳細ガイドをnoteで読む →</a>
+      <a href="#" id="cta-link">詳細ガイドは準備中です</a>
     </div>
   </div>
 </div>
@@ -209,7 +209,8 @@ function goBack(){if(current>0){current--;renderQ();}}
 function calcType(){
   const score={};
   answers.forEach((a,qi)=>{const t=QUESTIONS[qi].choices[a].type;score[t]=(score[t]||0)+1;});
-  return Object.entries(score).sort((a,b)=>b[1]-a[1])[0][0];
+  const lastType=QUESTIONS[QUESTIONS.length-1].choices[answers[QUESTIONS.length-1]].type;
+  return Object.entries(score).sort((a,b)=>b[1]-a[1]||(a[0]===lastType?-1:b[0]===lastType?1:0))[0][0];
 }
 
 function getJulianDay(y,m,d){if(m<=2){y--;m+=12;}const A=Math.floor(y/100);const B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524;}
