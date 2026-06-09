@@ -155,12 +155,12 @@ const QUESTIONS=[
 ];
 
 const TYPE_INFO={
-  '自由直感型':{tag:'自由直感型',desc:'ひらめきと余白を大切にする創造派。型にはまらず、自分の感覚を信じて動く。直感が鋭く、独自の発想で新しい道を切り開く。一方で、ルーティンや細かい管理が続くと息切れしやすい。',traits:['直感力','発想力','独自性','自由への欲求'],noteUrl:'https://note.com/legacy4future/n/ne2fbea970120'},
-  '堅実積み上げ型':{tag:'堅実積み上げ型',desc:'コツコツと積み上げる力が武器。計画を立て、着実に前進する安定感がある。信頼を築くのが得意で、長期的な成果を出しやすい。変化や曖昧さが続くと消耗しやすい面もある。',traits:['継続力','計画性','安定感','信頼'],noteUrl:'https://note.com/legacy4future/n/n0fbece91bff5'},
-  '突破行動型':{tag:'突破行動型',desc:'スピードと実行力で場を動かす行動派。考えるより先に動き、エネルギーで壁を突き破る。チャレンジが好きで、停滞より失敗を選ぶタイプ。じっくり考える場面では焦りを感じやすい。',traits:['行動力','スピード','挑戦心','突破力'],noteUrl:'https://note.com/legacy4future/n/n7ecd2b413e9f'},
-  '調和共感型':{tag:'調和共感型',desc:'人の気持ちを読む力と場をつなぐ力が強み。チームの潤滑油として自然に動き、人間関係を大切にする。頼まれると断れず、自分のペースを犠牲にしやすい面もある。',traits:['共感力','協調性','場づくり','気配り'],noteUrl:'https://note.com/legacy4future/n/nf3ea7b25bf56'},
-  '探求内省型':{tag:'探求内省型',desc:'深く考え、本質を掘り下げることが得意。情報を集めて整理し、意味や構造を見つけるのが好き。静かな環境でじっくり取り組む場面で力を発揮する。表面的なやり取りは疲弊しやすい。',traits:['分析力','深掘り','思考力','内省'],noteUrl:'https://note.com/legacy4future/n/nd635c6075e4f'},
-  '美意識表現型':{tag:'美意識表現型',desc:'感性とこだわりで世界に独自の価値を生み出すタイプ。クオリティへの執着が強く、「これでいい」に妥協できない。表現・発信・制作の場で際立った力を発揮する。完璧主義が足枷になることも。',traits:['感性','こだわり','表現力','美意識'],noteUrl:'https://note.com/legacy4future/n/n81ae646f80ea'}
+  '自由直感型':{tag:'自由直感型',slug:'jiyuu-chokkan',desc:'ひらめきと余白を大切にする創造派。型にはまらず、自分の感覚を信じて動く。直感が鋭く、独自の発想で新しい道を切り開く。一方で、ルーティンや細かい管理が続くと息切れしやすい。',traits:['直感力','発想力','独自性','自由への欲求'],noteUrl:'https://note.com/legacy4future/n/ne2fbea970120'},
+  '堅実積み上げ型':{tag:'堅実積み上げ型',slug:'kenjitsu-tsumiage',desc:'コツコツと積み上げる力が武器。計画を立て、着実に前進する安定感がある。信頼を築くのが得意で、長期的な成果を出しやすい。変化や曖昧さが続くと消耗しやすい面もある。',traits:['継続力','計画性','安定感','信頼'],noteUrl:'https://note.com/legacy4future/n/n0fbece91bff5'},
+  '突破行動型':{tag:'突破行動型',slug:'toppa-koudou',desc:'スピードと実行力で場を動かす行動派。考えるより先に動き、エネルギーで壁を突き破る。チャレンジが好きで、停滞より失敗を選ぶタイプ。じっくり考える場面では焦りを感じやすい。',traits:['行動力','スピード','挑戦心','突破力'],noteUrl:'https://note.com/legacy4future/n/n7ecd2b413e9f'},
+  '調和共感型':{tag:'調和共感型',slug:'chouwa-kyoukan',desc:'人の気持ちを読む力と場をつなぐ力が強み。チームの潤滑油として自然に動き、人間関係を大切にする。頼まれると断れず、自分のペースを犠牲にしやすい面もある。',traits:['共感力','協調性','場づくり','気配り'],noteUrl:'https://note.com/legacy4future/n/nf3ea7b25bf56'},
+  '探求内省型':{tag:'探求内省型',slug:'tankyuu-naisei',desc:'深く考え、本質を掘り下げることが得意。情報を集めて整理し、意味や構造を見つけるのが好き。静かな環境でじっくり取り組む場面で力を発揮する。表面的なやり取りは疲弊しやすい。',traits:['分析力','深掘り','思考力','内省'],noteUrl:'https://note.com/legacy4future/n/nd635c6075e4f'},
+  '美意識表現型':{tag:'美意識表現型',slug:'bii-hyogen',desc:'感性とこだわりで世界に独自の価値を生み出すタイプ。クオリティへの執着が強く、「これでいい」に妥協できない。表現・発信・制作の場で際立った力を発揮する。完璧主義が足枷になることも。',traits:['感性','こだわり','表現力','美意識'],noteUrl:'https://note.com/legacy4future/n/n81ae646f80ea'}
 };
 
 const KAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
@@ -234,7 +234,10 @@ function showResult(){
   const tr=document.getElementById('r-traits');
   tr.innerHTML='';
   info.traits.forEach(t=>{const s=document.createElement('span');s.className='trait';s.textContent=t;tr.appendChild(s);});
-  document.getElementById('cta-link').onclick=function(e){e.preventDefault();trackNoteClick(typeName,info.noteUrl);};
+  const noteUrl=buildTrackedNoteUrl(info.noteUrl,info.slug);
+  const ctaLink=document.getElementById('cta-link');
+  ctaLink.href=noteUrl;
+  ctaLink.onclick=function(e){e.preventDefault();trackNoteClick(typeName,info.slug,noteUrl);};
 
   const y=parseInt(document.getElementById('yr').value);
   const m=parseInt(document.getElementById('mo').value);
@@ -249,12 +252,21 @@ function showResult(){
   document.getElementById('result').style.display='block';
 
   // GA: 診断完了イベント
-  gtag('event', 'diagnosis_complete', {type: typeName});
+  gtag('event', 'diagnosis_complete', {type: typeName,type_slug: info.slug});
 }
 
-function trackNoteClick(typeName, url){
+function buildTrackedNoteUrl(url,typeSlug){
+  const trackedUrl=new URL(url);
+  trackedUrl.searchParams.set('utm_source','fortune_tool');
+  trackedUrl.searchParams.set('utm_medium','cta');
+  trackedUrl.searchParams.set('utm_campaign','type_diagnosis');
+  trackedUrl.searchParams.set('utm_content',typeSlug);
+  return trackedUrl.toString();
+}
+
+function trackNoteClick(typeName,typeSlug,url){
   // GA: note CTAクリックイベント
-  gtag('event', 'note_cta_click', {type: typeName});
+  gtag('event', 'note_cta_click', {type: typeName,type_slug: typeSlug});
   window.open(url, '_blank');
 }
 
