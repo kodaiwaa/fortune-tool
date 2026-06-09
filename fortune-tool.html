@@ -292,7 +292,7 @@ function buildShareUrl(typeSlug){
 }
 
 function buildShareText(info){
-  return info.shareText+'\\n'+buildShareUrl(info.slug);
+  return info.shareText.replace(/\\n/g,'\n')+'\n'+buildShareUrl(info.slug);
 }
 
 function copyShareText(){
