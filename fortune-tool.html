@@ -42,6 +42,12 @@ h1{font-size:20px;font-weight:500;margin-bottom:.5rem;text-align:center}
 .meisei-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
 .meisei-card h3{font-size:14px;font-weight:500;color:#888;margin-bottom:.75rem}
 .nichi-val{font-size:14px;line-height:1.7}
+.share-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.share-card h3{font-size:14px;font-weight:500;color:#555;margin-bottom:.5rem}
+.share-card p{font-size:12px;color:#888;line-height:1.6;margin-bottom:.75rem}
+.share-text{width:100%;min-height:190px;border:1px solid #ddd;border-radius:10px;background:#fafafa;color:#333;font-size:13px;line-height:1.65;padding:12px;resize:vertical;margin-bottom:.75rem}
+.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.share-actions .btn{width:100%}
 .cta{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;text-align:center}
 .cta p{font-size:13px;color:#666;margin-bottom:.75rem;line-height:1.6}
 .cta a{display:inline-block;padding:10px 24px;background:#1a1a1a;color:#fff;border-radius:8px;font-size:13px;text-decoration:none}
@@ -94,6 +100,15 @@ input[type=number]{width:100%;height:36px;padding:0 10px;border:1px solid #ddd;b
     <div class="meisei-card" id="meisei-card" style="display:none">
       <h3>四柱推命メモ（日干）</h3>
       <div class="nichi-val" id="h-nichi"></div>
+    </div>
+    <div class="share-card">
+      <h3>結果をシェアする</h3>
+      <p>そのままコピーしてXに投稿できます。</p>
+      <textarea class="share-text" id="share-text" readonly></textarea>
+      <div class="share-actions">
+        <button class="btn" id="share-copy-btn" onclick="copyShareText()">コピーする</button>
+        <button class="btn btn-primary" onclick="openXShare()">Xでシェア</button>
+      </div>
     </div>
     <div class="cta">
       <p>あなたのタイプをさらに深掘り。<br>仕事・お金・人間関係への活かし方をnoteで解説しています。</p>
@@ -155,12 +170,12 @@ const QUESTIONS=[
 ];
 
 const TYPE_INFO={
-  '自由直感型':{tag:'自由直感型',slug:'jiyuu-chokkan',desc:'ひらめきと余白を大切にする創造派。型にはまらず、自分の感覚を信じて動く。直感が鋭く、独自の発想で新しい道を切り開く。一方で、ルーティンや細かい管理が続くと息切れしやすい。',traits:['直感力','発想力','独自性','自由への欲求'],noteUrl:'https://note.com/legacy4future/n/ne2fbea970120'},
-  '堅実積み上げ型':{tag:'堅実積み上げ型',slug:'kenjitsu-tsumiage',desc:'コツコツと積み上げる力が武器。計画を立て、着実に前進する安定感がある。信頼を築くのが得意で、長期的な成果を出しやすい。変化や曖昧さが続くと消耗しやすい面もある。',traits:['継続力','計画性','安定感','信頼'],noteUrl:'https://note.com/legacy4future/n/n0fbece91bff5'},
-  '突破行動型':{tag:'突破行動型',slug:'toppa-koudou',desc:'スピードと実行力で場を動かす行動派。考えるより先に動き、エネルギーで壁を突き破る。チャレンジが好きで、停滞より失敗を選ぶタイプ。じっくり考える場面では焦りを感じやすい。',traits:['行動力','スピード','挑戦心','突破力'],noteUrl:'https://note.com/legacy4future/n/n7ecd2b413e9f'},
-  '調和共感型':{tag:'調和共感型',slug:'chouwa-kyoukan',desc:'人の気持ちを読む力と場をつなぐ力が強み。チームの潤滑油として自然に動き、人間関係を大切にする。頼まれると断れず、自分のペースを犠牲にしやすい面もある。',traits:['共感力','協調性','場づくり','気配り'],noteUrl:'https://note.com/legacy4future/n/nf3ea7b25bf56'},
-  '探求内省型':{tag:'探求内省型',slug:'tankyuu-naisei',desc:'深く考え、本質を掘り下げることが得意。情報を集めて整理し、意味や構造を見つけるのが好き。静かな環境でじっくり取り組む場面で力を発揮する。表面的なやり取りは疲弊しやすい。',traits:['分析力','深掘り','思考力','内省'],noteUrl:'https://note.com/legacy4future/n/nd635c6075e4f'},
-  '美意識表現型':{tag:'美意識表現型',slug:'bii-hyogen',desc:'感性とこだわりで世界に独自の価値を生み出すタイプ。クオリティへの執着が強く、「これでいい」に妥協できない。表現・発信・制作の場で際立った力を発揮する。完璧主義が足枷になることも。',traits:['感性','こだわり','表現力','美意識'],noteUrl:'https://note.com/legacy4future/n/n81ae646f80ea'}
+  '自由直感型':{tag:'自由直感型',slug:'jiyuu-chokkan',desc:'ひらめきと余白を大切にする創造派。型にはまらず、自分の感覚を信じて動く。直感が鋭く、独自の発想で新しい道を切り開く。一方で、ルーティンや細かい管理が続くと息切れしやすい。',traits:['直感力','発想力','独自性','自由への欲求'],noteUrl:'https://note.com/legacy4future/n/ne2fbea970120',shareText:'命軸診断やってみたら「自由直感型」でした。\\n直感で動いて後から理由をつける、って\\n言われてみれば全部そうだった笑\\n枠に収まれない理由がわかった気がする。\\n▼無料で診断できます'},
+  '堅実積み上げ型':{tag:'堅実積み上げ型',slug:'kenjitsu-tsumiage',desc:'コツコツと積み上げる力が武器。計画を立て、着実に前進する安定感がある。信頼を築くのが得意で、長期的な成果を出しやすい。変化や曖昧さが続くと消耗しやすい面もある。',traits:['継続力','計画性','安定感','信頼'],noteUrl:'https://note.com/legacy4future/n/n0fbece91bff5',shareText:'命軸診断、「堅実積み上げ型」でした。\\n派手な一発逆転より、地道に続ける方が\\n本当に自分に合ってるんだと腑に落ちた。\\n焦って動いてたの、無駄だったかも。\\n▼無料で診断できます'},
+  '突破行動型':{tag:'突破行動型',slug:'toppa-koudou',desc:'スピードと実行力で場を動かす行動派。考えるより先に動き、エネルギーで壁を突き破る。チャレンジが好きで、停滞より失敗を選ぶタイプ。じっくり考える場面では焦りを感じやすい。',traits:['行動力','スピード','挑戦心','突破力'],noteUrl:'https://note.com/legacy4future/n/n7ecd2b413e9f',shareText:'命軸診断、「突破行動型」でした。\\n考えるより先に動いちゃう、って\\n長所でもあり短所でもあるって書いてあって刺さった。\\nもっとうまく使えそう。\\n▼無料で診断できます'},
+  '調和共感型':{tag:'調和共感型',slug:'chouwa-kyoukan',desc:'人の気持ちを読む力と場をつなぐ力が強み。チームの潤滑油として自然に動き、人間関係を大切にする。頼まれると断れず、自分のペースを犠牲にしやすい面もある。',traits:['共感力','協調性','場づくり','気配り'],noteUrl:'https://note.com/legacy4future/n/nf3ea7b25bf56',shareText:'命軸診断やったら「調和共感型」でした。\\n場の空気を読みすぎて自分の意見が言えなくなる、\\nって傾向が完全に当たってた。\\n自覚するだけで少し楽になった。\\n▼無料で診断できます'},
+  '探求内省型':{tag:'探求内省型',slug:'tankyuu-naisei',desc:'深く考え、本質を掘り下げることが得意。情報を集めて整理し、意味や構造を見つけるのが好き。静かな環境でじっくり取り組む場面で力を発揮する。表面的なやり取りは疲弊しやすい。',traits:['分析力','深掘り','思考力','内省'],noteUrl:'https://note.com/legacy4future/n/nd635c6075e4f',shareText:'命軸診断、「探求内省型」でした。\\n一人で深く考えるのが好きで\\nそれが強みでもあると書いてあって素直に嬉しかった。\\nちゃんと使い道があるんだな、と。\\n▼無料で診断できます'},
+  '美意識表現型':{tag:'美意識表現型',slug:'bii-hyogen',desc:'感性とこだわりで世界に独自の価値を生み出すタイプ。クオリティへの執着が強く、「これでいい」に妥協できない。表現・発信・制作の場で際立った力を発揮する。完璧主義が足枷になることも。',traits:['感性','こだわり','表現力','美意識'],noteUrl:'https://note.com/legacy4future/n/n81ae646f80ea',shareText:'命軸診断、「美意識表現型」でした。\\nこだわるほど出せなくなる、って\\nまさに今の自分すぎて笑えなかった。\\n表現できない理由に名前がついた感じ。\\n▼無料で診断できます'}
 };
 
 const KAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
@@ -180,6 +195,7 @@ const KAN_NATURE={
 
 let current=0;
 const answers=[];
+let currentResult=null;
 
 function renderQ(){
   const q=QUESTIONS[current];
@@ -238,6 +254,8 @@ function showResult(){
   const ctaLink=document.getElementById('cta-link');
   ctaLink.href=noteUrl;
   ctaLink.onclick=function(e){e.preventDefault();trackNoteClick(typeName,info.slug,noteUrl);};
+  currentResult={type:typeName,slug:info.slug,shareText:buildShareText(info)};
+  document.getElementById('share-text').value=currentResult.shareText;
 
   const y=parseInt(document.getElementById('yr').value);
   const m=parseInt(document.getElementById('mo').value);
@@ -262,6 +280,47 @@ function buildTrackedNoteUrl(url,typeSlug){
   trackedUrl.searchParams.set('utm_campaign','type_diagnosis');
   trackedUrl.searchParams.set('utm_content',typeSlug);
   return trackedUrl.toString();
+}
+
+function buildShareUrl(typeSlug){
+  const url=new URL('https://kodaiwaa.github.io/fortune-tool/fortune-tool.html');
+  url.searchParams.set('utm_source','x');
+  url.searchParams.set('utm_medium','social');
+  url.searchParams.set('utm_campaign','diagnosis_share');
+  url.searchParams.set('utm_content',typeSlug);
+  return url.toString();
+}
+
+function buildShareText(info){
+  return info.shareText+'\\n'+buildShareUrl(info.slug);
+}
+
+function copyShareText(){
+  if(!currentResult)return;
+  const btn=document.getElementById('share-copy-btn');
+  const setCopied=()=>{
+    btn.textContent='コピーしました✓';
+    setTimeout(()=>{btn.textContent='コピーする';},2000);
+  };
+  gtag('event','share_copy_click',{type:currentResult.type,type_slug:currentResult.slug});
+  navigator.clipboard.writeText(currentResult.shareText).then(setCopied).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=currentResult.shareText;
+    ta.style.position='fixed';
+    ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    setCopied();
+  });
+}
+
+function openXShare(){
+  if(!currentResult)return;
+  gtag('event','share_x_click',{type:currentResult.type,type_slug:currentResult.slug});
+  const shareUrl='https://twitter.com/intent/tweet?text='+encodeURIComponent(currentResult.shareText);
+  window.open(shareUrl,'_blank','noopener,noreferrer');
 }
 
 function trackNoteClick(typeName,typeSlug,url){
